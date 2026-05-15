@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowMind - The AI Workspace That Thinks With You</title>
+    <meta name="description" content="FlowMind unifies your team's tasks, docs, meetings, and analytics into one intelligent workspace — powered by AI that actually understands your work.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600;700&family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-color: #050508;
+            --surface-1: #0D0D14;
+            --surface-2: #13131F;
+            --card-bg: #1A1A2E;
+            --primary: #6C63FF;
+            --secondary: #00F5D4;
+            --accent-hot: #FF6B6B;
+            --glow: rgba(108, 99, 255, 0.3);
+            --text-primary: #F0F0FF;
+            --text-muted: #6B7280;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-highlight: rgba(255, 255, 255, 0.15);
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Manrope', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --container-width: 1280px;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #F8F9FA;
+            --surface-1: #FFFFFF;
+            --surface-2: #F1F3F5;
+            --card-bg: #FFFFFF;
+            --primary: #5A52D5;
+            --secondary: #00C4A7;
+            --text-primary: #111827;
+            --text-muted: #4B5563;
+            --border: rgba(0, 0, 0, 0.1);
+            --border-highlight: rgba(0, 0, 0, 0.2);
+            --glow: rgba(90, 82, 213, 0.15);
+        }
+
+        /* Globals */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-body);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        h1, h2, h3, h4, .display-font {
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .mono { font-family: var(--font-mono); }
+
+        /* Typography & Utilities */
+        .text-primary { color: var(--text-primary); }
+        .text-muted { color: var(--text-muted); }
+        .text-accent { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .text-center { text-align: center; }
+
+        /* Background Effects */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2; overflow: hidden; pointer-events: none;
+        }
+        .aurora-blob {
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3;
+            animation: pulse-aurora 10s ease-in-out infinite alternate;
+        }
+        .aurora-1 { width: 600px; height: 600px; background: var(--primary); top: -200px; left: -100px; }
+        .aurora-2 { width: 500px; height: 500px; background: var(--secondary); top: 20%; right: -200px; animation-delay: -5s; }
+        .aurora-3 { width: 700px; height: 700px; background: rgba(108, 99, 255, 0.2); bottom: -300px; left: 20%; animation-delay: -2s; }
+
+        @keyframes pulse-aurora {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.2) translate(50px, 50px); }
+        }
+
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1; opacity: 0.5; pointer-events: none;
+            mask-image: radial-gradient(circle at center 30%, black, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at center 30%, black, transparent 70%);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem;
+            transition: var(--transition); gap: 8px; position: relative; overflow: hidden;
+        }
+        .btn-primary {
+            background: var(--primary); color: #fff;
+            box-shadow: 0 4px 20px var(--glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108, 99, 255, 0.5);
+            background: #7a72ff;
+        }
+        .btn-ghost {
+            background: rgba(255,255,255,0.05); color: var(--text-primary); border: 1px solid var(--border);
+        }
+        [data-theme="light"] .btn-ghost { background: rgba(0,0,0,0.05); }
+        .btn-ghost:hover {
+            background: rgba(255,255,255,0.1); border-color: var(--border-highlight);
+        }
+        [data-theme="light"] .btn-ghost:hover { background: rgba(0,0,0,0.1); }
+
+        /* Announcement Bar */
+        .announcement-bar {
+            background: linear-gradient(90deg, #3a3294, var(--primary), #3a3294);
+            background-size: 200% 100%;
+            color: #fff; text-align: center; padding: 8px 16px; font-size: 0.875rem; font-weight: 500;
+            position: relative; z-index: 100; animation: shimmer 4s infinite linear; display: flex; justify-content: center; align-items: center; gap: 12px;
+        }
+        .announcement-bar a { text-decoration: underline; font-weight: 600; }
+        .close-announcement { position: absolute; right: 16px; background: none; border: none; color: #fff; cursor: pointer; opacity: 0.7; }
+        .close-announcement:hover { opacity: 1; }
+        @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+        /* Navbar */
+        .navbar {
+            position: sticky; top: 0; z-index: 99;
+            padding: 20px 0; border-bottom: 1px solid transparent;
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(var(--bg-color), 0.8); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border); padding: 16px 0;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+        }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: var(--font-display); font-weight: 900; font-size: 1.5rem; display: flex; align-items: center; gap: 8px; color: var(--text-primary); }
+        .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { color: var(--text-muted); font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-actions { display: flex; align-items: center; gap: 16px; }
+        .theme-toggle { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; transition: var(--transition); padding: 8px; }
+        .theme-toggle:hover { color: var(--text-primary); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed; top: 0; right: -100%; width: 300px; height: 100vh;
+            background: var(--surface-1); border-left: 1px solid var(--border);
+            z-index: 1000; padding: 24px; transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; gap: 24px; box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .mobile-menu.open { right: 0; }
+        .mobile-menu-header { display: flex; justify-content: space-between; align-items: center; }
+        .mobile-menu .nav-links { flex-direction: column; gap: 16px; }
+        .mobile-menu .nav-actions { flex-direction: column; width: 100%; }
+        .mobile-menu .btn { width: 100%; }
+
+        /* Section Spacing */
+        section { padding: 100px 0; position: relative; }
+
+        /* Hero Section */
+        .hero { padding: 120px 0 60px; min-height: 90vh; display: flex; align-items: center; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(108, 99, 255, 0.1); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 100px; color: var(--primary); font-size: 0.875rem; font-weight: 600; margin-bottom: 24px; }
+        .hero-title { font-size: clamp(3rem, 5vw, 4.5rem); margin-bottom: 16px; letter-spacing: -0.02em; }
+        .hero-subtitle { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 24px; min-height: 2.5rem; }
+        .hero-desc { font-size: 1.125rem; color: var(--text-muted); margin-bottom: 40px; max-width: 90%; }
+        .hero-ctas { display: flex; gap: 16px; margin-bottom: 40px; }
+        .trust-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .avatars { display: flex; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--bg-color); margin-left: -12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: white; }
+        .avatar:first-child { margin-left: 0; }
+        .trust-text { display: flex; flex-direction: column; gap: 4px; font-size: 0.875rem; color: var(--text-muted); }
+        .stars { color: #FBBF24; font-size: 1rem; }
+
+        /* Mockup */
+        .mockup-wrapper { perspective: 1000px; position: relative; }
+        .mockup {
+            background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+            transform: rotateY(-5deg) rotateX(5deg); transition: transform 0.4s ease;
+            animation: float 6s ease-in-out infinite; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotateY(-5deg) rotateX(5deg); } 50% { transform: translateY(-20px) rotateY(-5deg) rotateX(5deg); } }
+        .mockup-header { height: 32px; background: var(--surface-2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 16px; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.red { background: #FF5F56; } .dot.yellow { background: #FFBD2E; } .dot.green { background: #27C93F; }
+        .mockup-body { display: flex; height: 400px; }
+        .mockup-sidebar { width: 140px; border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .mockup-nav-item { padding: 6px 8px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        .mockup-nav-item.active { background: rgba(108, 99, 255, 0.1); color: var(--primary); }
+        .mockup-main { flex: 1; padding: 24px; position: relative; background: var(--bg-color); }
+        .mockup-topbar { display: flex; justify-content: space-between; margin-bottom: 24px; font-size: 0.875rem; }
+        .mockup-kanban { display: flex; gap: 16px; height: 100%; }
+        .kanban-col { flex: 1; background: var(--surface-1); border-radius: 8px; padding: 12px; border: 1px solid var(--border); }
+        .col-title { font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; color: var(--text-muted); }
+        .kanban-card { background: var(--card-bg); padding: 10px; border-radius: 6px; font-size: 0.75rem; margin-bottom: 8px; border: 1px solid var(--border); position: relative; }
+        .card-tag { display: inline-block; padding: 2px 6px; background: rgba(0, 245, 212, 0.1); color: var(--secondary); border-radius: 4px; font-size: 0.6rem; margin-bottom: 6px; }
+        
+        /* AI Panel inside mockup */
+        .ai-panel { position: absolute; right: 24px; bottom: 24px; width: 220px; background: var(--card-bg); border: 1px solid rgba(108, 99, 255, 0.3); border-radius: 12px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transform: translateY(20px); animation: slideUp 8s infinite; }
+        .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 0.75rem; font-weight: bold; color: var(--primary); }
+        .ai-text { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+        .ai-actions { display: flex; gap: 8px; }
+        .ai-btn { flex: 1; padding: 6px; border-radius: 4px; font-size: 0.65rem; text-align: center; font-weight: bold; }
+        .ai-btn-primary { background: var(--primary); color: white; }
+        .ai-btn-ghost { background: var(--surface-2); color: var(--text-primary); }
+
+        @keyframes slideUp { 0%, 10% { opacity: 0; transform: translateY(20px); } 15%, 85% { opacity: 1; transform: translateY(0); } 90%, 100% { opacity: 0; transform: translateY(20px); } }
+
+        /* Logos */
+        .logos { padding: 40px 0; border-bottom: 1px solid var(--border); overflow: hidden; white-space: nowrap; }
+        .logos-track { display: inline-flex; gap: 64px; animation: scroll 30s linear infinite; align-items: center; }
+        .logo-item { font-size: 1.5rem; font-family: var(--font-display); font-weight: 700; color: var(--text-muted); opacity: 0.5; transition: opacity 0.3s; display: flex; align-items: center; gap: 8px;}
+        .logo-item:hover { opacity: 1; color: var(--text-primary); }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Live Ticker */
+        .ticker-section { padding: 20px 0; background: var(--surface-1); border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.875rem; }
+        .ticker-container { display: flex; align-items: center; justify-content: space-between; }
+        .ticker-left { display: flex; align-items: center; gap: 12px; }
+        .live-dot { width: 8px; height: 8px; background: var(--secondary); border-radius: 50%; box-shadow: 0 0 10px var(--secondary); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .ticker-text { color: var(--text-muted); }
+        .ticker-link { color: var(--primary); text-decoration: none; font-weight: bold; }
+
+        /* Problem -> Solution */
+        .comparison-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 40px; align-items: stretch; margin-top: 60px; }
+        .col-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 40px; position: relative; overflow: hidden; }
+        .col-old { border-color: rgba(255, 107, 107, 0.2); }
+        .col-new { border-color: rgba(108, 99, 255, 0.3); background: linear-gradient(180deg, var(--surface-1) 0%, rgba(108, 99, 255, 0.05) 100%); box-shadow: 0 20px 40px rgba(108,99,255,0.05); }
+        .col-title { font-size: 1.5rem; margin-bottom: 32px; font-family: var(--font-display); }
+        .col-old .col-title { color: var(--accent-hot); }
+        .col-new .col-title { color: var(--secondary); }
+        .list-item { display: flex; gap: 16px; margin-bottom: 24px; font-size: 1.125rem; align-items: flex-start; opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
+        .list-item.visible { opacity: 1; transform: translateY(0); }
+        .old-icon { color: var(--accent-hot); } .new-icon { color: var(--secondary); background: rgba(0,245,212,0.1); padding: 4px; border-radius: 50%; font-size: 0.8rem; margin-top: 4px; }
+        .comparison-arrow { display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 2rem; }
+        .col-footer { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.875rem; color: var(--text-muted); }
+
+        /* Feature Tabs */
+        .tabs-nav { display: flex; justify-content: center; gap: 16px; margin: 40px 0; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 100px; color: var(--text-muted); font-weight: 600; transition: all 0.3s; position: relative; overflow: hidden; }
+        .tab-btn.active { background: rgba(108, 99, 255, 0.1); color: var(--primary); border-color: rgba(108, 99, 255, 0.3); }
+        .tab-content { display: none; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; animation: fadeIn 0.5s ease; }
+        .tab-content.active { display: grid; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .feature-bullets { margin-top: 32px; }
+        .feature-bullets li { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 1.1rem; }
+        .feature-bullets i { color: var(--primary); }
+        .feature-mockup { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; height: 400px; padding: 24px; position: relative; overflow: hidden; }
+
+        /* Mouse Follow Cards */
+        .interactive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+        .glow-card {
+            background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 32px;
+            position: relative; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .glow-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(108, 99, 255, 0.15), transparent 40%);
+            z-index: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .glow-card:hover::before { opacity: 1; }
+        .glow-card:hover { border-color: rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1; }
+        .glow-card-content { position: relative; z-index: 1; }
+        .card-icon { width: 48px; height: 48px; background: rgba(108, 99, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary); margin-bottom: 24px; }
+        .card-title { font-size: 1.5rem; margin-bottom: 16px; }
+
+        /* Timeline */
+        .timeline-container { margin-top: 80px; padding: 40px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; }
+        .timeline-header { text-align: center; margin-bottom: 40px; }
+        .timeline { display: flex; justify-content: space-between; position: relative; }
+        .timeline::before { content: ''; position: absolute; top: 24px; left: 0; width: 100%; height: 2px; background: var(--border); z-index: 0; }
+        .timeline-step { position: relative; z-index: 1; text-align: center; cursor: pointer; flex: 1; }
+        .step-dot { width: 48px; height: 48px; background: var(--surface-2); border: 2px solid var(--border); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s; }
+        .timeline-step.active .step-dot { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 20px var(--glow); }
+        .step-label { font-size: 0.875rem; color: var(--text-muted); transition: color 0.3s; }
+        .timeline-step.active .step-label { color: var(--text-primary); font-weight: bold; }
+        .timeline-content-box { margin-top: 40px; padding: 32px; background: var(--surface-2); border-radius: 12px; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.25rem; }
+
+        /* Metrics */
+        .metrics-section { background: var(--surface-1); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 80px 0; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; text-align: center; margin-bottom: 60px; }
+        .metric-value { font-size: 3.5rem; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+        .metric-label { color: var(--text-muted); font-size: 1rem; }
+        .quote-block { max-width: 800px; margin: 0 auto; text-align: center; padding: 40px; background: linear-gradient(180deg, rgba(108,99,255,0.05) 0%, transparent 100%); border-radius: 24px; border: 1px solid var(--border); }
+        .quote-text { font-size: 1.75rem; font-family: var(--font-display); line-height: 1.4; margin-bottom: 32px; font-style: italic; }
+        .quote-author { display: flex; align-items: center; justify-content: center; gap: 16px; }
+
+        /* Pricing */
+        .pricing-controls { text-align: center; margin: 40px 0; background: var(--surface-1); padding: 32px; border-radius: 16px; border: 1px solid var(--border); }
+        .toggle-container { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 32px; font-weight: 600; }
+        .toggle-switch { position: relative; width: 56px; height: 32px; background: var(--surface-2); border-radius: 16px; border: 1px solid var(--border); cursor: pointer; }
+        .toggle-knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: var(--primary); border-radius: 50%; transition: transform 0.3s; }
+        .toggle-switch.annual .toggle-knob { transform: translateX(24px); background: var(--secondary); }
+        .save-badge { background: rgba(0, 245, 212, 0.1); color: var(--secondary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .slider-container { max-width: 500px; margin: 0 auto; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -10px; box-shadow: 0 0 10px var(--glow); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--surface-2); border-radius: 2px; }
+        .roi-text { font-family: var(--font-mono); color: var(--secondary); margin-top: 16px; font-size: 0.875rem; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
+        .price-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 40px; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .price-card:hover { transform: translateY(-5px); }
+        .price-card.popular { border-color: var(--primary); box-shadow: 0 0 30px rgba(108,99,255,0.15); position: relative; }
+        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 4px 16px; border-radius: 100px; font-size: 0.75rem; font-weight: bold; }
+        .price-header { margin-bottom: 32px; }
+        .price-name { font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; }
+        .price-amount { font-size: 3rem; font-family: var(--font-display); font-weight: 900; margin-bottom: 8px; }
+        .price-amount span { font-size: 1rem; color: var(--text-muted); font-weight: normal; }
+        .price-features { margin-bottom: 40px; flex: 1; }
+        .price-features li { margin-bottom: 16px; display: flex; gap: 12px; font-size: 0.95rem; }
+        .price-features i { color: var(--secondary); margin-top: 4px; }
+        .price-card.enterprise i { color: var(--primary); }
+
+        /* Compare Table */
+        .compare-toggle { text-align: center; margin-bottom: 24px; }
+        .compare-toggle button { color: var(--text-muted); text-decoration: underline; font-size: 0.875rem; }
+        .compare-table { width: 100%; border-collapse: collapse; display: none; background: var(--surface-1); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+        .compare-table.show { display: table; animation: fadeIn 0.5s ease; }
+        .compare-table th, .compare-table td { padding: 16px 24px; text-align: left; border-bottom: 1px solid var(--border); }
+        .compare-table th { background: var(--surface-2); font-weight: 600; font-family: var(--font-display); }
+        .compare-table td.center { text-align: center; }
+        .check { color: var(--secondary); } .cross { color: var(--text-muted); opacity: 0.5; }
+
+        /* Testimonials */
+        .masonry { column-count: 3; column-gap: 24px; margin-top: 60px; }
+        .testimonial-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 24px; break-inside: avoid; transition: transform 0.3s, box-shadow 0.3s; }
+        .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1; position: relative; }
+        .t-quote { font-size: 1rem; margin-bottom: 24px; line-height: 1.6; }
+        .t-author { display: flex; align-items: center; gap: 12px; }
+        .t-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .t-info h4 { font-size: 0.875rem; margin-bottom: 2px; }
+        .t-info p { font-size: 0.75rem; color: var(--text-muted); }
+        .t-stars { color: #FBBF24; font-size: 0.75rem; margin-bottom: 12px; }
+
+        /* Integrations */
+        .orbit-container { position: relative; height: 600px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 60px; }
+        .center-logo { width: 80px; height: 80px; background: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; z-index: 10; box-shadow: 0 0 40px var(--glow); }
+        .ring { position: absolute; border-radius: 50%; border: 1px dashed var(--border); }
+        .ring-1 { width: 300px; height: 300px; animation: spin 20s linear infinite; }
+        .ring-2 { width: 500px; height: 500px; animation: spin 35s linear infinite reverse; }
+        .ring-3 { width: 700px; height: 700px; animation: spin 50s linear infinite; }
+        .orbit-item { position: absolute; top: -20px; left: 50%; margin-left: -20px; width: 40px; height: 40px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--text-primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .orbit-item[data-icon="slack"] { color: #E01E5A; } .orbit-item[data-icon="github"] { color: #fff; } .orbit-item[data-icon="figma"] { color: #F24E1E; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Keep items upright */
+        .ring-1 .orbit-item { animation: spin 20s linear infinite reverse; }
+        .ring-2 .orbit-item { animation: spin 35s linear infinite; }
+        .ring-3 .orbit-item { animation: spin 50s linear infinite reverse; }
+        
+        .api-card { max-width: 600px; margin: -60px auto 0; background: #0d0d14; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; z-index: 11; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .api-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 6px; }
+        .api-body { padding: 24px; font-family: var(--font-mono); font-size: 0.875rem; color: #a9b2c3; overflow-x: auto; }
+        .api-body span.keyword { color: #ff7b72; } .api-body span.string { color: #a5d6ff; } .api-body span.func { color: #d2a8ff; }
+
+        /* CTA Section */
+        .cta-section { background: linear-gradient(180deg, var(--bg-color) 0%, rgba(108, 99, 255, 0.1) 100%); text-align: center; padding: 120px 0; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+        .email-form { max-width: 500px; margin: 40px auto 20px; display: flex; gap: 12px; position: relative; }
+        .email-input { flex: 1; padding: 16px 24px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary); font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .email-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(108,99,255,0.1); }
+        .trust-badges { display: flex; justify-content: center; gap: 32px; margin-top: 60px; color: var(--text-muted); font-size: 0.875rem; }
+        .trust-badge { display: flex; align-items: center; gap: 8px; }
+
+        /* Form states */
+        .spinner { display: none; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 2px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        .success-msg { display: none; color: var(--secondary); margin-top: 16px; font-weight: bold; animation: fadeIn 0.5s ease; }
+        
+        /* FAQ */
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 60px; }
+        .faq-item { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .faq-question { padding: 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 600; font-size: 1.1rem; }
+        .faq-icon { transition: transform 0.3s; color: var(--text-muted); }
+        .faq-answer { padding: 0 24px; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: var(--text-muted); }
+        .faq-item.active .faq-icon { transform: rotate(45deg); color: var(--primary); }
+        .faq-item.active .faq-answer { padding: 0 24px 24px; max-height: 200px; }
+
+        /* Footer */
+        .footer { padding: 80px 0 40px; background: var(--bg-color); border-top: 1px solid var(--border); }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 24px; }
+        .footer-links { display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px; margin-bottom: 60px; }
+        .footer-col h4 { font-size: 0.875rem; margin-bottom: 24px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col a { color: var(--text-muted); font-size: 0.875rem; transition: color 0.3s; }
+        .footer-col a:hover { color: var(--text-primary); }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-muted); }
+
+        /* Utilities & Animations */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Progress Bar */
+        .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary)); z-index: 1000; width: 0%; transition: width 0.1s; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid, .comparison-grid, .interactive-grid, .metrics-grid, .pricing-grid, .faq-grid { grid-template-columns: 1fr; gap: 40px; }
+            .tabs-nav { flex-direction: column; }
+            .tab-content { grid-template-columns: 1fr; }
+            .masonry { column-count: 2; }
+            .footer-links { grid-template-columns: repeat(3, 1fr); }
+            .hero-title { font-size: 3rem; }
+            .orbit-container { display: none; } /* Hide complex orbit on tablet */
+        }
+        @media (max-width: 768px) {
+            .nav-links, .nav-actions { display: none; }
+            .mobile-menu-btn { display: block; }
+            .masonry { column-count: 1; }
+            .footer-links { grid-template-columns: repeat(2, 1fr); }
+            .compare-table { display: none !important; }
+            .hero { padding-top: 60px; }
+            .mockup-wrapper { display: none; } /* Hide mockup on mobile for space */
+            .hero-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-progress" id="progressBar"></div>
+
+    <!-- Background Elements -->
+    <div class="aurora-bg">
+        <div class="aurora-blob aurora-1"></div>
+        <div class="aurora-blob aurora-2"></div>
+        <div class="aurora-blob aurora-3"></div>
+    </div>
+    <div class="grid-bg"></div>
+
+    <!-- Announcement Bar -->
+    <div class="announcement-bar" id="announcement">
+        <span>🎉 FlowMind 2.0 is live — AI Meeting Summaries now included</span>
+        <a href="#changelog">See What's New &rarr;</a>
+        <button class="close-announcement" onclick="document.getElementById('announcement').style.display='none'"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-content">
+            <a href="#" class="logo">
+                <div class="logo-icon"><i class="fas fa-cube"></i></div>
+                FlowMind
+            </a>
+            <ul class="nav-links">
+                <li><a href="#product">Product</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#customers">Customers</a></li>
+                <li><a href="#blog">Blog</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+                <a href="#signin" class="btn btn-ghost">Sign In</a>
+                <a href="#signup" class="btn btn-primary">Start Free — No Card</a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileBtn"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Mobile Drawer -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="logo"><div class="logo-icon"><i class="fas fa-cube"></i></div> FlowMind</div>
+            <button class="mobile-menu-btn" id="closeMobileBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-links" style="display:flex;">
+            <li><a href="#product">Product</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#customers">Customers</a></li>
+        </ul>
+        <div class="nav-actions" style="display:flex;">
+            <a href="#signin" class="btn btn-ghost">Sign In</a>
+            <a href="#signup" class="btn btn-primary">Start Free</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero container" id="product">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="badge"><i class="fas fa-star"></i> Rated #1 AI Workspace 2025 — Product Hunt</div>
+                <h1 class="hero-title">Stop Managing.<br><span class="text-accent">Start Flowing.</span></h1>
+                <h2 class="hero-subtitle display-font" id="typewriter"></h2>
+                <p class="hero-desc">Join 48,000 teams who replaced 4 tools with one. FlowMind unifies your tasks, docs, meetings, and analytics — powered by AI that thinks with you.</p>
+                <div class="hero-ctas">
+                    <a href="#signup" class="btn btn-primary">Start Free — 14 Days <i class="fas fa-arrow-right"></i></a>
+                    <a href="#demo" class="btn btn-ghost"><i class="fas fa-play-circle"></i> Watch 2-Min Demo</a>
+                </div>
+                <div class="trust-row">
+                    <div class="avatars">
+                        <div class="avatar">SJ</div><div class="avatar" style="background:#FF6B6B">AK</div><div class="avatar" style="background:#00F5D4;color:#000">MR</div><div class="avatar" style="background:#5A52D5">LT</div>
+                    </div>
+                    <div class="trust-text">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> <span class="text-primary">4.9/5 (2,847)</span></div>
+                        <span>No credit card • Cancel anytime • Setup in 3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mockup-wrapper">
+                <div class="mockup">
+                    <div class="mockup-header">
+                        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-sidebar">
+                            <div class="mockup-nav-item"><i class="fas fa-home"></i> Home</div>
+                            <div class="mockup-nav-item active"><i class="fas fa-check-square"></i> Tasks</div>
+                            <div class="mockup-nav-item"><i class="fas fa-file-alt"></i> Docs</div>
+                            <div class="mockup-nav-item"><i class="fas fa-video"></i> Meetings</div>
+                            <div class="mockup-nav-item"><i class="fas fa-chart-bar"></i> Analytics</div>
+                        </div>
+                        <div class="mockup-main">
+                            <div class="mockup-topbar">
+                                <strong>Good morning, Alex ☀️</strong>
+                                <div><i class="fas fa-search" style="margin-right:12px;color:var(--text-muted)"></i><i class="fas fa-bell"></i></div>
+                            </div>
+                            <div style="display:flex;gap:12px;margin-bottom:20px;">
+                                <div class="kanban-card" style="flex:1;text-align:center"><div class="mono" style="font-size:1rem;color:var(--text-primary)">12</div>Tasks due</div>
+                                <div class="kanban-card" style="flex:1;text-align:center"><div class="mono" style="font-size:1rem;color:var(--secondary)">3</div>Meetings</div>
+                                <div class="kanban-card" style="flex:1;text-align:center"><div class="mono" style="font-size:1rem;color:var(--primary)">94%</div>On track</div>
+                            </div>
+                            <div class="mockup-kanban">
+                                <div class="kanban-col">
+                                    <div class="col-title">TODO</div>
+                                    <div class="kanban-card" id="k-card-1"><span class="card-tag">Frontend</span>Update navbar styles</div>
+                                    <div class="kanban-card"><span class="card-tag">API</span>Fix user endpoint</div>
+                                </div>
+                                <div class="kanban-col">
+                                    <div class="col-title">IN PROGRESS</div>
+                                    <div class="kanban-card"><span class="card-tag">Design</span>Hero section iteration</div>
+                                </div>
+                            </div>
+                            <div class="ai-panel">
+                                <div class="ai-header"><i class="fas fa-sparkles"></i> Flow AI</div>
+                                <div class="ai-text">I've summarized your 9AM meeting and created 3 action items. Want me to assign them?</div>
+                                <div class="ai-actions">
+                                    <div class="ai-btn ai-btn-ghost">Dismiss</div>
+                                    <div class="ai-btn ai-btn-primary">Accept</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logos -->
+    <div class="logos reveal">
+        <div class="logos-track">
+            <!-- Repeated twice for seamless scroll -->
+            <div class="logo-item"><i class="fab fa-stripe"></i> Stripe</div>
+            <div class="logo-item"><i class="fab fa-figma"></i> Figma</div>
+            <div class="logo-item"><i class="fab fa-slack"></i> Linear</div>
+            <div class="logo-item"><i class="fas fa-play"></i> Vercel</div>
+            <div class="logo-item"><i class="fab fa-github"></i> GitHub</div>
+            <div class="logo-item"><i class="fab fa-intercom"></i> Intercom</div>
+            <div class="logo-item"><i class="fab fa-stripe"></i> Stripe</div>
+            <div class="logo-item"><i class="fab fa-figma"></i> Figma</div>
+            <div class="logo-item"><i class="fab fa-slack"></i> Linear</div>
+            <div class="logo-item"><i class="fas fa-play"></i> Vercel</div>
+            <div class="logo-item"><i class="fab fa-github"></i> GitHub</div>
+            <div class="logo-item"><i class="fab fa-intercom"></i> Intercom</div>
+        </div>
+    </div>
+
+    <!-- Live Ticker -->
+    <div class="ticker-section">
+        <div class="container ticker-container">
+            <div class="ticker-left">
+                <div class="live-dot"></div>
+                <strong style="color:var(--text-primary)">Live Activity</strong>
+                <span class="ticker-text" id="ticker-text">🚀 Riya from Bangalore just started a free trial</span>
+            </div>
+            <a href="#signup" class="ticker-link">Join them &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Problem -> Solution -->
+    <section class="container" id="features">
+        <div class="text-center reveal">
+            <h2 class="hero-title" style="font-size:3rem">Your Team Is Drowning in Tabs</h2>
+            <p class="hero-desc" style="margin: 0 auto;">Stop context switching. Bring it all together.</p>
+        </div>
+        
+        <div class="comparison-grid">
+            <div class="col-card col-old reveal">
+                <h3 class="col-title">The Old Way</h3>
+                <div class="problem-list">
+                    <div class="list-item"><i class="fas fa-frown old-icon"></i> Slack for chat → 47 unread msgs</div>
+                    <div class="list-item"><i class="fas fa-frown old-icon"></i> Notion for docs → can't find anything</div>
+                    <div class="list-item"><i class="fas fa-frown old-icon"></i> Monday for tasks → nobody updates it</div>
+                    <div class="list-item"><i class="fas fa-frown old-icon"></i> Zoom for meetings → notes lost forever</div>
+                </div>
+                <div class="col-footer">Average cost: $847/month for 6 tools</div>
+            </div>
+            
+            <div class="comparison-arrow reveal">
+                <i class="fas fa-arrow-right"></i>
+            </div>
+
+            <div class="col-card col-new reveal">
+                <h3 class="col-title">The FlowMind Way</h3>
+                <div class="solution-list">
+                    <div class="list-item"><i class="fas fa-check new-icon"></i> AI-powered unified chat + tasks</div>
+                    <div class="list-item"><i class="fas fa-check new-icon"></i> Smart docs that link to your tasks</div>
+                    <div class="list-item"><i class="fas fa-check new-icon"></i> Kanban auto-assigns by capacity</div>
+                    <div class="list-item"><i class="fas fa-check new-icon"></i> Meeting AI writes notes & creates tasks</div>
+                </div>
+                <div class="col-footer">One tool. $29/month. Hours saved.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Tabs -->
+    <section class="container reveal">
+        <div class="text-center">
+            <h2 class="hero-title" style="font-size:3rem">Everything Your Team Needs</h2>
+        </div>
+        
+        <div class="tabs-nav" id="featureTabs">
+            <button class="tab-btn active" data-target="tab1">AI Tasks</button>
+            <button class="tab-btn" data-target="tab2">Smart Docs</button>
+            <button class="tab-btn" data-target="tab3">Meeting AI</button>
+            <button class="tab-btn" data-target="tab4">Analytics</button>
+        </div>
+
+        <div class="tab-content active" id="tab1">
+            <div>
+                <h3 style="font-size:2rem;margin-bottom:16px;">Intelligent Task Management</h3>
+                <p class="text-muted">Tasks that practically manage themselves. Our AI understands your team's workload and auto-assigns based on capacity.</p>
+                <ul class="feature-bullets">
+                    <li><i class="fas fa-check-circle"></i> Auto-assignment based on skills</li>
+                    <li><i class="fas fa-check-circle"></i> Smart deadline prediction</li>
+                    <li><i class="fas fa-check-circle"></i> Seamless integration with chat</li>
+                    <li><i class="fas fa-check-circle"></i> Custom Kanban workflows</li>
+                </ul>
+                <a href="#signup" class="btn btn-ghost" style="margin-top:24px;">Explore Tasks &rarr;</a>
+            </div>
+            <div class="feature-mockup">
+                <!-- Mock UI -->
+                <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2)">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:12px">
+                        <strong style="font-size:0.875rem">Design System Update</strong>
+                        <span style="background:rgba(108, 99, 255, 0.2);color:var(--primary);padding:2px 8px;border-radius:4px;font-size:0.75rem"><i class="fas fa-sparkles"></i> AI Assigned</span>
+                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:16px">Update core components to match new brand guidelines. Required before sprint ends.</p>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <div class="avatar" style="width:24px;height:24px;font-size:0.5rem">SJ</div>
+                        <span style="font-size:0.75rem;color:var(--text-muted)">Due Tomorrow</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab2">
+            <div>
+                <h3 style="font-size:2rem;margin-bottom:16px;">Living Documents</h3>
+                <p class="text-muted">Write better, faster. Docs that connect to your tasks and update in real time as work progresses.</p>
+                <ul class="feature-bullets">
+                    <li><i class="fas fa-check-circle"></i> AI writing assistant built-in</li>
+                    <li><i class="fas fa-check-circle"></i> Bi-directional linking to tasks</li>
+                    <li><i class="fas fa-check-circle"></i> Real-time multiplayer editing</li>
+                    <li><i class="fas fa-check-circle"></i> Markdown support</li>
+                </ul>
+            </div>
+            <div class="feature-mockup">
+                <div style="padding:24px;font-family:var(--font-mono);font-size:0.875rem">
+                    <h4 style="font-family:var(--font-body);font-size:1.5rem;margin-bottom:16px">Q3 Marketing Strategy</h4>
+                    <p style="color:var(--text-muted);margin-bottom:12px">Our primary objective is to increase conversion by 15% through...</p>
+                    <div style="display:inline-block;background:rgba(0, 245, 212, 0.1);color:var(--secondary);padding:4px 8px;border-radius:4px;border:1px solid var(--secondary);animation:pulse-aurora 2s infinite">
+                        <i class="fas fa-magic"></i> AI Suggestion: "targeted email campaigns and a revamped landing page." [Tab to accept]
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="tab3">
+            <div>
+                <h3 style="font-size:2rem;margin-bottom:16px;">AI Meeting Summaries</h3>
+                <p class="text-muted">Never take meeting notes again. FlowMind joins your calls, transcribes, summarizes, and extracts action items automatically.</p>
+                <ul class="feature-bullets">
+                    <li><i class="fas fa-check-circle"></i> Works with Zoom, Meet, Teams</li>
+                    <li><i class="fas fa-check-circle"></i> Automatic action item extraction</li>
+                    <li><i class="fas fa-check-circle"></i> Speaker attribution</li>
+                    <li><i class="fas fa-check-circle"></i> Searchable transcript history</li>
+                </ul>
+            </div>
+            <div class="feature-mockup" style="display:flex;flex-direction:column;gap:12px">
+                <div style="background:var(--surface-1);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:0.875rem">
+                    <strong style="color:var(--primary)">Product Sync Summary</strong><br>
+                    <span style="color:var(--text-muted)">Discussed Q3 roadmap. Priority is the new billing system.</span>
+                </div>
+                <div style="background:var(--card-bg);padding:12px;border-radius:8px;border:1px solid var(--border);font-size:0.875rem">
+                    <strong>Action Items Created (3)</strong>
+                    <ul style="margin-top:8px;color:var(--text-muted);padding-left:16px;list-style:disc">
+                        <li>Design API schema (Assigned to Alex)</li>
+                        <li>Review legal docs (Assigned to Sarah)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="tab4">
+            <div>
+                <h3 style="font-size:2rem;margin-bottom:16px;">Predictive Analytics</h3>
+                <p class="text-muted">Know if a project is going off track before it happens. Beautiful, actionable insights based on real team velocity.</p>
+                <ul class="feature-bullets">
+                    <li><i class="fas fa-check-circle"></i> Velocity tracking</li>
+                    <li><i class="fas fa-check-circle"></i> Burnout prediction</li>
+                    <li><i class="fas fa-check-circle"></i> Resource allocation heatmaps</li>
+                    <li><i class="fas fa-check-circle"></i> Custom dashboard builder</li>
+                </ul>
+            </div>
+            <div class="feature-mockup" style="display:flex;align-items:flex-end;gap:8px;padding-top:100px;">
+                <div style="flex:1;background:var(--primary);height:40%;border-radius:4px 4px 0 0;opacity:0.6"></div>
+                <div style="flex:1;background:var(--primary);height:60%;border-radius:4px 4px 0 0;opacity:0.8"></div>
+                <div style="flex:1;background:var(--secondary);height:90%;border-radius:4px 4px 0 0;position:relative">
+                    <div style="position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:var(--surface-1);padding:4px 8px;border-radius:4px;font-size:0.75rem;border:1px solid var(--border)">+23%</div>
+                </div>
+                <div style="flex:1;background:var(--primary);height:70%;border-radius:4px 4px 0 0;opacity:0.7"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Mouse Cards -->
+    <section class="container reveal">
+        <div class="text-center" style="margin-bottom: 60px;">
+            <h2 class="hero-title" style="font-size:3rem">Built for Humans</h2>
+        </div>
+        
+        <div class="interactive-grid">
+            <div class="glow-card">
+                <div class="glow-card-content">
+                    <div class="card-icon"><i class="fas fa-brain"></i></div>
+                    <h3 class="card-title">AI That Reads the Room</h3>
+                    <p class="text-muted">Context-aware AI that knows what you're working on. It suggests files, mentions, and actions before you even type.</p>
+                </div>
+            </div>
+            <div class="glow-card">
+                <div class="glow-card-content">
+                    <div class="card-icon" style="color:var(--secondary);background:rgba(0,245,212,0.1)"><i class="fas fa-users"></i></div>
+                    <h3 class="card-title">Real-Time Collaboration</h3>
+                    <p class="text-muted">See cursors fly, tasks move, and text appear instantly. No refreshing, no "is someone else editing this" warnings.</p>
+                </div>
+            </div>
+            <div class="glow-card">
+                <div class="glow-card-content">
+                    <div class="card-icon" style="color:var(--accent-hot);background:rgba(255,107,107,0.1)"><i class="fas fa-bolt"></i></div>
+                    <h3 class="card-title">Zero Setup Workflow</h3>
+                    <p class="text-muted">Skip the onboarding. Connect your existing tools and FlowMind instantly organizes your chaotic workspace.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-container">
+            <h3 class="timeline-header display-font">Your First Week With FlowMind</h3>
+            <div class="timeline" id="timeline">
+                <div class="timeline-step active" data-step="1">
+                    <div class="step-dot">1</div>
+                    <div class="step-label">Day 1: Invite Team</div>
+                </div>
+                <div class="timeline-step" data-step="2">
+                    <div class="step-dot">2</div>
+                    <div class="step-label">Day 2: Import Tools</div>
+                </div>
+                <div class="timeline-step" data-step="3">
+                    <div class="step-dot">3</div>
+                    <div class="step-label">Day 3: AI Magic</div>
+                </div>
+                <div class="timeline-step" data-step="4">
+                    <div class="step-dot">7</div>
+                    <div class="step-label">Day 7: 3x Velocity</div>
+                </div>
+            </div>
+            <div class="timeline-content-box" id="timeline-content">
+                <div style="font-size:2rem;margin-bottom:16px;">👋</div>
+                <strong>Invite your team with one click.</strong><br>
+                <span class="text-muted" style="font-size:1rem">SSO enabled. No complex permissions to set up.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Wall -->
+    <section class="metrics-section reveal" id="customers">
+        <div class="container">
+            <div class="metrics-grid">
+                <div>
+                    <div class="metric-value counter" data-target="48000">0</div>
+                    <div class="metric-label">Teams Using FlowMind</div>
+                </div>
+                <div>
+                    <div class="metric-value counter" data-target="4.9" data-decimal="true">0</div>
+                    <div class="metric-label">Average Rating</div>
+                </div>
+                <div>
+                    <div class="metric-value"><span class="counter" data-target="3.2" data-decimal="true">0</span>h</div>
+                    <div class="metric-label">Saved Per Person/Week</div>
+                </div>
+                <div>
+                    <div class="metric-value">$<span class="counter" data-target="12400">0</span></div>
+                    <div class="metric-label">Avg. Annual Savings</div>
+                </div>
+            </div>
+
+            <div class="quote-block">
+                <div class="quote-text">"We canceled Notion, Monday, and Loom in the same week. FlowMind paid for itself in 3 days."</div>
+                <div class="quote-author">
+                    <div class="avatar" style="width:48px;height:48px;font-size:1rem;background:var(--secondary);color:#000">SC</div>
+                    <div style="text-align:left">
+                        <strong style="display:block;color:var(--text-primary)">Sarah Chen</strong>
+                        <span style="font-size:0.875rem;color:var(--text-muted)">Head of Product, Vercel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Calculator -->
+    <section class="container reveal" id="pricing">
+        <div class="text-center" style="margin-bottom:20px;">
+            <h2 class="hero-title" style="font-size:3rem">Calculate Your ROI</h2>
+            <p class="text-muted">Simple, transparent pricing that scales with your ambition.</p>
+        </div>
+
+        <div class="pricing-controls">
+            <div class="toggle-container">
+                <span id="label-monthly">Monthly</span>
+                <div class="toggle-switch annual" id="billingToggle">
+                    <div class="toggle-knob"></div>
+                </div>
+                <span id="label-annual">Annual <span class="save-badge">Save 40%</span></span>
+            </div>
+            
+            <div class="slider-container">
+                <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-weight:bold;">
+                    <span>Team Size: <span id="teamSizeVal" style="color:var(--primary)">15</span></span>
+                    <span><i class="fas fa-users text-muted"></i></span>
+                </div>
+                <input type="range" id="teamSlider" min="1" max="200" value="15">
+                <div class="roi-text">Your team saves approximately <span id="hoursSaved">192</span> hours/month = $<span id="valueSaved">9,600</span> value</div>
+            </div>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="price-card">
+                <div class="price-header">
+                    <div class="price-name">Starter</div>
+                    <div class="price-amount">$0<span>/mo</span></div>
+                    <p class="text-muted" style="font-size:0.875rem">Perfect for small teams finding their flow.</p>
+                </div>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Up to 5 members</li>
+                    <li><i class="fas fa-check"></i> 10 AI summaries/month</li>
+                    <li><i class="fas fa-check"></i> 5 projects</li>
+                    <li><i class="fas fa-check"></i> Community support</li>
+                </ul>
+                <a href="#signup" class="btn btn-ghost" style="width:100%">Get Started Free</a>
+            </div>
+
+            <div class="price-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="price-header">
+                    <div class="price-name">Pro</div>
+                    <div class="price-amount">$<span id="proPrice">285</span><span>/mo</span></div>
+                    <p class="text-muted" style="font-size:0.875rem">Total based on team size. Unlimited potential.</p>
+                </div>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Unlimited members</li>
+                    <li><i class="fas fa-check"></i> Unlimited AI features</li>
+                    <li><i class="fas fa-check"></i> Advanced analytics</li>
+                    <li><i class="fas fa-check"></i> Custom workflows</li>
+                    <li><i class="fas fa-check"></i> Priority support</li>
+                </ul>
+                <a href="#signup" class="btn btn-primary" style="width:100%">Start 14-Day Free Trial</a>
+            </div>
+
+            <div class="price-card enterprise">
+                <div class="price-header">
+                    <div class="price-name">Enterprise</div>
+                    <div class="price-amount">Custom</div>
+                    <p class="text-muted" style="font-size:0.875rem">For organizations needing ultimate control.</p>
+                </div>
+                <ul class="price-features">
+                    <li><i class="fas fa-check"></i> Everything in Pro</li>
+                    <li><i class="fas fa-check"></i> SSO / SAML</li>
+                    <li><i class="fas fa-check"></i> Dedicated success manager</li>
+                    <li><i class="fas fa-check"></i> SLA guarantee</li>
+                    <li><i class="fas fa-check"></i> Custom integrations</li>
+                </ul>
+                <a href="#contact" class="btn btn-ghost" style="width:100%">Talk to Sales</a>
+            </div>
+        </div>
+
+        <div class="compare-toggle">
+            <button id="compareBtn">Compare all features &darr;</button>
+        </div>
+        <table class="compare-table" id="compareTable">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th class="center">Starter</th>
+                    <th class="center">Pro</th>
+                    <th class="center">Enterprise</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>AI Task Assignment</td><td class="center check"><i class="fas fa-check"></i></td><td class="center check"><i class="fas fa-check"></i></td><td class="center check"><i class="fas fa-check"></i></td></tr>
+                <tr><td>Meeting Summaries</td><td class="center">10/mo</td><td class="center">Unlimited</td><td class="center">Unlimited</td></tr>
+                <tr><td>Custom Analytics</td><td class="center cross"><i class="fas fa-times"></i></td><td class="center check"><i class="fas fa-check"></i></td><td class="center check"><i class="fas fa-check"></i></td></tr>
+                <tr><td>API Access</td><td class="center cross"><i class="fas fa-times"></i></td><td class="center check"><i class="fas fa-check"></i></td><td class="center check"><i class="fas fa-check"></i></td></tr>
+                <tr><td>SSO / SAML</td><td class="center cross"><i class="fas fa-times"></i></td><td class="center cross"><i class="fas fa-times"></i></td><td class="center check"><i class="fas fa-check"></i></td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="container reveal">
+        <div class="text-center" style="margin-bottom:60px;">
+            <h2 class="hero-title" style="font-size:3rem">Teams Love FlowMind</h2>
+        </div>
+        
+        <div class="masonry">
+            <div class="testimonial-card">
+                <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="t-quote">"The meeting AI alone saved us 6 hours a week. It perfectly captures action items and assigns them to the right people in Jira."</p>
+                <div class="t-author">
+                    <div class="t-avatar">JD</div>
+                    <div class="t-info"><h4>James Doe</h4><p>Engineering Manager, TechCo</p></div>
+                </div>
+            </div>
+            <div class="testimonial-card" style="border-color:rgba(108,99,255,0.3)">
+                <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="t-quote">"I was skeptical about replacing Notion, but FlowMind's smart docs are on another level. The way it links to our Kanban board feels like magic. Best SaaS product of the year hands down."</p>
+                <div class="t-author">
+                    <div class="t-avatar" style="background:var(--primary);color:#fff">AR</div>
+                    <div class="t-info"><h4>Anita Roy</h4><p>Startup Founder, Mumbai</p></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="t-quote">"Finally, a tool that doesn't feel like work to maintain."</p>
+                <div class="t-author">
+                    <div class="t-avatar">MK</div>
+                    <div class="t-info"><h4>Marcus K.</h4><p>Design Lead</p></div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p class="t-quote">"We consolidated 4 subscriptions into just FlowMind. The ROI was immediate and my team is actually happy to use it."</p>
+                <div class="t-author">
+                    <div class="t-avatar" style="background:var(--secondary);color:#000">SL</div>
+                    <div class="t-info"><h4>Sarah Lewis</h4><p>Operations, London</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integrations API Section -->
+    <section class="container reveal" style="padding-bottom: 0;">
+        <div class="text-center" style="margin-bottom:20px;">
+            <h2 class="hero-title" style="font-size:3rem">Connects With Everything</h2>
+            <p class="text-muted">Native integrations for your favorite tools. REST API for everything else.</p>
+        </div>
+
+        <div class="orbit-container">
+            <div class="center-logo"><i class="fas fa-cube"></i></div>
+            
+            <div class="ring ring-1">
+                <div class="orbit-item" style="top: -20px; left: 50%" data-icon="slack"><i class="fab fa-slack"></i></div>
+                <div class="orbit-item" style="top: 50%; left: -20px" data-icon="github"><i class="fab fa-github"></i></div>
+                <div class="orbit-item" style="top: 50%; right: -20px" data-icon="figma"><i class="fab fa-figma"></i></div>
+                <div class="orbit-item" style="bottom: -20px; left: 50%" data-icon="google"><i class="fab fa-google-drive"></i></div>
+            </div>
+            
+            <div class="ring ring-2">
+                <div class="orbit-item" style="top: 10%; left: 15%"><i class="fab fa-jira"></i></div>
+                <div class="orbit-item" style="top: 10%; right: 15%"><i class="fas fa-bolt"></i></div>
+                <div class="orbit-item" style="bottom: 10%; left: 15%"><i class="fab fa-trello"></i></div>
+                <div class="orbit-item" style="bottom: 10%; right: 15%"><i class="fab fa-aws"></i></div>
+            </div>
+        </div>
+
+        <div class="api-card">
+            <div class="api-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+            </div>
+            <div class="api-body">
+<pre><code><span class="keyword">const</span> response = <span class="keyword">await</span> <span class="func">fetch</span>(<span class="string">'https://api.flowmind.com/v1/tasks'</span>, {
+  method: <span class="string">'POST'</span>,
+  headers: { <span class="string">'Authorization'</span>: <span class="string">'Bearer YOUR_KEY'</span> },
+  body: JSON.<span class="func">stringify</span>({
+    title: <span class="string">'Deploy new landing page'</span>,
+    autoAssign: <span class="keyword">true</span>,
+    aiAnalysis: <span class="keyword">true</span>
+  })
+});</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="signup">
+        <div class="container reveal">
+            <h2 class="hero-title" style="font-size:3.5rem;margin-bottom:16px;">Your Team's Best Monday Starts Here</h2>
+            <p class="hero-desc" style="margin: 0 auto; max-width: 600px;">Join 48,000 teams. Set up in 3 minutes. No credit card needed.</p>
+            
+            <form class="email-form" id="ctaForm">
+                <input type="email" class="email-input" placeholder="name@company.com" required>
+                <button type="submit" class="btn btn-primary" style="padding: 16px 32px; font-size: 1.1rem;">
+                    <span id="btnText">Get Started Free <i class="fas fa-arrow-right"></i></span>
+                    <div class="spinner" id="btnSpinner"></div>
+                </button>
+            </form>
+            <div class="success-msg" id="successMsg"><i class="fas fa-check-circle"></i> Check your inbox! We sent a magic link 🪄</div>
+            
+            <div style="margin-top:16px;font-size:0.875rem;color:var(--text-muted)">
+                ✓ 14-day free trial &nbsp; ✓ No card &nbsp; ✓ Cancel anytime
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-badge"><i class="fas fa-shield-alt"></i> SOC 2 Type II Certified</div>
+                <div class="trust-badge"><i class="fas fa-user-shield"></i> GDPR Compliant</div>
+                <div class="trust-badge"><i class="fas fa-bolt"></i> 99.9% Uptime SLA</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="container reveal">
+        <div class="text-center" style="margin-bottom:40px;">
+            <h2 class="hero-title" style="font-size:3rem">Questions? We've Got Answers.</h2>
+        </div>
+        
+        <div class="faq-grid">
+            <div>
+                <div class="faq-item">
+                    <div class="faq-question">Is there really no credit card required?<i class="fas fa-plus faq-icon"></i></div>
+                    <div class="faq-answer"><p style="padding-top:16px">Yes! You can sign up and use all Pro features for 14 days completely free. We won't ask for payment details until you decide to upgrade.</p></div>
+                </div>
+                <div class="faq-item" style="margin-top:16px">
+                    <div class="faq-question">How does the AI know what to do?<i class="fas fa-plus faq-icon"></i></div>
+                    <div class="faq-answer"><p style="padding-top:16px">Our AI context engine analyzes your team's public workspace data (tasks, docs, public channels) to understand context, tone, and project status, ensuring high-quality, relevant outputs.</p></div>
+                </div>
+                <div class="faq-item" style="margin-top:16px">
+                    <div class="faq-question">Can I import data from Notion or Monday?<i class="fas fa-plus faq-icon"></i></div>
+                    <div class="faq-answer"><p style="padding-top:16px">Absolutely. We have 1-click importers for Notion, Monday.com, Asana, Jira, and Trello. Your structure and metadata will be preserved.</p></div>
+                </div>
+            </div>
+            <div>
+                <div class="faq-item">
+                    <div class="faq-question">Is my data secure and private?<i class="fas fa-plus faq-icon"></i></div>
+                    <div class="faq-answer"><p style="padding-top:16px">Security is our top priority. We are SOC 2 Type II certified and GDPR compliant. Your data is encrypted at rest and in transit, and our AI models do not train on your private data.</p></div>
+                </div>
+                <div class="faq-item" style="margin-top:16px">
+                    <div class="faq-question">What's the difference between Pro and Enterprise?<i class="fas fa-plus faq-icon"></i></div>
+                    <div class="faq-answer"><p style="padding-top:16px">Enterprise adds advanced admin controls, SSO/SAML, dedicated customer success, custom SLA guarantees, and priority routing for support requests.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-cube"></i></div> FlowMind
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <span class="text-muted" style="font-size:0.875rem">Get product updates:</span>
+                    <div style="display:flex;gap:8px">
+                        <input type="email" placeholder="Email address" style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary);outline:none">
+                        <button class="btn btn-primary" style="padding:8px 16px">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#changelog">Changelog</a></li>
+                        <li><a href="#">Roadmap</a></li>
+                        <li><a href="#">API Docs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Partners</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Templates</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Cookies</a></li>
+                        <li><a href="#">GDPR</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Social</h4>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-twitter"></i> Twitter/X</a></li>
+                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                        <li><a href="#"><i class="fab fa-github"></i> GitHub</a></li>
+                        <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+                        <li><a href="#"><i class="fab fa-discord"></i> Discord</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div>© 2025 FlowMind, Inc. — Made with <i class="fas fa-coffee"></i> and obsession.</div>
+                <div style="display:flex;gap:16px;align-items:center">
+                    <span><i class="fas fa-globe"></i> English (US)</span>
+                    <button class="theme-toggle" onclick="document.getElementById('themeToggle').click()"><i class="fas fa-moon"></i> Theme</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('flowmind-theme') || 'dark';
+            html.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('flowmind-theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                const icon = themeToggle.querySelector('i');
+                if (theme === 'dark') {
+                    icon.className = 'fas fa-sun';
+                } else {
+                    icon.className = 'fas fa-moon';
+                }
+            }
+
+            // Scroll Progress & Navbar Blur
+            const progressBar = document.getElementById('progressBar');
+            const navbar = document.getElementById('navbar');
+
+            window.addEventListener('scroll', () => {
+                // Progress Bar
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                progressBar.style.width = scrolled + '%';
+
+                // Navbar sticky style
+                if (winScroll > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Mobile Menu
+            const mobileBtn = document.getElementById('mobileBtn');
+            const closeMobileBtn = document.getElementById('closeMobileBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            mobileBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+            closeMobileBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+            // Typewriter Effect
+            const phrases = [
+                "AI that writes your meeting notes.",
+                "Tasks that assign themselves.",
+                "Docs that update in real time.",
+                "Analytics that predict, not report."
+            ];
+            let phraseIndex = 0;
+            let letterIndex = 0;
+            let currentText = "";
+            let isDeleting = false;
+            const typewriterEl = document.getElementById('typewriter');
+
+            function type() {
+                const currentPhrase = phrases[phraseIndex];
+                
+                if (isDeleting) {
+                    currentText = currentPhrase.substring(0, letterIndex - 1);
+                    letterIndex--;
+                } else {
+                    currentText = currentPhrase.substring(0, letterIndex + 1);
+                    letterIndex++;
+                }
+                
+                typewriterEl.innerHTML = currentText + '<span style="border-right: 2px solid var(--primary); animation: blink 1s infinite;">&nbsp;</span>';
+
+                let typeSpeed = isDeleting ? 30 : 80;
+
+                if (!isDeleting && letterIndex === currentPhrase.length) {
+                    typeSpeed = 2000; // Pause at end
+                    isDeleting = true;
+                } else if (isDeleting && letterIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    typeSpeed = 500; // Pause before new word
+                }
+
+                setTimeout(type, typeSpeed);
+            }
+            setTimeout(type, 1000);
+
+            // Live Activity Ticker
+            const tickerTexts = [
+                "🚀 Riya from Bangalore just started a free trial",
+                "💳 Team at DesignCo upgraded to Pro",
+                "⭐ Marcus left a 5-star review",
+                "📋 Sarah's team completed 47 tasks today",
+                "🔥 124 teams joined FlowMind today"
+            ];
+            const tickerEl = document.getElementById('ticker-text');
+            let tickerIndex = 0;
+
+            setInterval(() => {
+                tickerEl.style.opacity = 0;
+                setTimeout(() => {
+                    tickerIndex = (tickerIndex + 1) % tickerTexts.length;
+                    tickerEl.textContent = tickerTexts[tickerIndex];
+                    tickerEl.style.opacity = 1;
+                }, 300);
+            }, 4000);
+            tickerEl.style.transition = "opacity 0.3s";
+
+            // Mockup Animation Loop
+            const kCard1 = document.getElementById('k-card-1');
+            setInterval(() => {
+                kCard1.style.transform = 'translateY(150px) translateX(150px)';
+                kCard1.style.opacity = '0';
+                setTimeout(() => {
+                    kCard1.style.transform = 'translateY(0) translateX(0)';
+                    kCard1.style.opacity = '1';
+                }, 3000);
+            }, 8000);
+            kCard1.style.transition = "all 0.5s ease";
+
+            // Scroll Reveal Animation (Intersection Observer)
+            const revealElements = document.querySelectorAll('.reveal, .list-item');
+            
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('active', 'visible');
+                        }, entry.target.classList.contains('list-item') ? index * 150 : 0);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { rootMargin: "0px 0px -100px 0px" });
+
+            revealElements.forEach(el => revealObserver.observe(el));
+
+            // Feature Tabs
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.target).classList.add('active');
+                });
+            });
+
+            // Mouse Follow Glow Cards
+            document.querySelectorAll('.glow-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    
+                    // 3D Tilt
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5;
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
+                });
+            });
+
+            // Timeline Interaction
+            const timelineSteps = document.querySelectorAll('.timeline-step');
+            const timelineContentBox = document.getElementById('timeline-content');
+            
+            const timelineData = {
+                1: { icon: '👋', title: 'Invite your team with one click.', desc: 'SSO enabled. No complex permissions to set up.' },
+                2: { icon: '🔌', title: 'Connect your tools in seconds.', desc: 'Native integrations sync historical data instantly.' },
+                3: { icon: '✨', title: 'Watch the AI work its magic.', desc: 'First meeting summarized, first tasks auto-assigned.' },
+                4: { icon: '🚀', title: 'Your team is 3x more productive.', desc: 'Less time managing work. More time flowing.' }
+            };
+
+            timelineSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    timelineSteps.forEach(s => s.classList.remove('active'));
+                    step.classList.add('active');
+                    
+                    const data = timelineData[step.dataset.step];
+                    timelineContentBox.style.opacity = 0;
+                    
+                    setTimeout(() => {
+                        timelineContentBox.innerHTML = `
+                            <div style="font-size:2rem;margin-bottom:16px;">${data.icon}</div>
+                            <strong>${data.title}</strong><br>
+                            <span class="text-muted" style="font-size:1rem">${data.desc}</span>
+                        `;
+                        timelineContentBox.style.opacity = 1;
+                        
+                        // Add confetti if step 4
+                        if(step.dataset.step === '4') createConfetti(timelineContentBox);
+                        
+                    }, 300);
+                });
+            });
+            timelineContentBox.style.transition = "opacity 0.3s";
+
+            // Number Counter Animation
+            const counters = document.querySelectorAll('.counter');
+            let hasCounted = false;
+
+            const counterObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !hasCounted) {
+                    hasCounted = true;
+                    counters.forEach(counter => {
+                        const target = parseFloat(counter.getAttribute('data-target'));
+                        const isDecimal = counter.hasAttribute('data-decimal');
+                        const duration = 2000; // ms
+                        const stepTime = 20;
+                        const steps = duration / stepTime;
+                        const increment = target / steps;
+                        let current = 0;
+
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                            }
+                            
+                            if (target > 1000) {
+                                counter.innerText = Math.floor(current).toLocaleString();
+                            } else if (isDecimal) {
+                                counter.innerText = current.toFixed(1);
+                            } else {
+                                counter.innerText = Math.floor(current);
+                            }
+                        }, stepTime);
+                    });
+                }
+            });
+            if(document.querySelector('.metrics-section')) {
+                counterObserver.observe(document.querySelector('.metrics-section'));
+            }
+
+            // Pricing Calculator
+            const teamSlider = document.getElementById('teamSlider');
+            const teamSizeVal = document.getElementById('teamSizeVal');
+            const billingToggle = document.getElementById('billingToggle');
+            const proPrice = document.getElementById('proPrice');
+            const hoursSaved = document.getElementById('hoursSaved');
+            const valueSaved = document.getElementById('valueSaved');
+
+            let isAnnual = true;
+
+            function updatePricing() {
+                const size = parseInt(teamSlider.value);
+                teamSizeVal.innerText = size;
+                
+                // Base price logic
+                const pricePerSeat = isAnnual ? 19 : 29;
+                const totalPro = size * pricePerSeat;
+                
+                proPrice.innerText = totalPro.toLocaleString();
+                
+                // ROI Logic: avg 3.2 hrs saved per person/week ≈ 12.8 hrs/month. Let's round to 12.
+                // Value estimated at $50/hr
+                const totalHours = size * 12;
+                const totalValue = totalHours * 50;
+                
+                hoursSaved.innerText = totalHours.toLocaleString();
+                valueSaved.innerText = totalValue.toLocaleString();
+            }
+
+            teamSlider.addEventListener('input', updatePricing);
+            
+            billingToggle.addEventListener('click', () => {
+                isAnnual = !isAnnual;
+                billingToggle.classList.toggle('annual', isAnnual);
+                updatePricing();
+            });
+            
+            updatePricing(); // Init
+
+            // Compare Table Toggle
+            const compareBtn = document.getElementById('compareBtn');
+            const compareTable = document.getElementById('compareTable');
+            
+            compareBtn.addEventListener('click', () => {
+                compareTable.classList.toggle('show');
+                compareBtn.innerHTML = compareTable.classList.contains('show') ? 
+                    'Hide feature comparison &uarr;' : 'Compare all features &darr;';
+            });
+
+            // FAQ Accordion
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                item.querySelector('.faq-question').addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    // Close all
+                    faqItems.forEach(i => i.classList.remove('active'));
+                    // Open if wasn't active
+                    if (!isActive) item.classList.add('active');
+                });
+            });
+
+            // Form Submit Simulation
+            const ctaForm = document.getElementById('ctaForm');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const successMsg = document.getElementById('successMsg');
+
+            ctaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                btnText.style.display = 'none';
+                btnSpinner.style.display = 'block';
+                
+                setTimeout(() => {
+                    btnSpinner.style.display = 'none';
+                    btnText.style.display = 'inline';
+                    ctaForm.style.display = 'none';
+                    successMsg.style.display = 'block';
+                    createConfetti(document.querySelector('.cta-section'));
+                }, 1500);
+            });
+
+            // Simple Confetti effect for wow factor
+            function createConfetti(parentElement) {
+                const colors = ['#6C63FF', '#00F5D4', '#FF6B6B', '#F0F0FF'];
+                for(let i=0; i<50; i++) {
+                    const conf = document.createElement('div');
+                    conf.style.position = 'absolute';
+                    conf.style.width = Math.random() * 10 + 5 + 'px';
+                    conf.style.height = Math.random() * 10 + 5 + 'px';
+                    conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    conf.style.top = '50%';
+                    conf.style.left = '50%';
+                    conf.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    conf.style.zIndex = 100;
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 50 + Math.random() * 100;
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity - 50;
+                    
+                    conf.animate([
+                        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                        { transform: `translate(${tx}px, ${ty}px) scale(0) rotate(${Math.random()*360}deg)`, opacity: 0 }
+                    ], {
+                        duration: 1000 + Math.random() * 1000,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    });
+                    
+                    parentElement.appendChild(conf);
+                    setTimeout(() => conf.remove(), 2000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
