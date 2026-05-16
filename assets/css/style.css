@@ -479,5 +479,8 @@
             .hero { padding-top: 60px; }
             .mockup-wrapper { display: none; } /* Hide mockup on mobile for space */
             .hero-grid { grid-template-columns: 1fr; }
+            .email-form { flex-direction: column; }
+            .timeline { flex-direction: column; gap: 40px; }
+            .timeline::before { display: none; }
         }
     
