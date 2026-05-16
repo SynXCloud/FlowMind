@@ -484,3 +484,47 @@
             .timeline::before { display: none; }
         }
     
+/* Mobile Safeties */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden !important;
+        width: 100%;
+        position: relative;
+    }
+    .container {
+        width: 100% !important;
+        padding: 0 16px !important;
+        box-sizing: border-box !important;
+    }
+    .hero-title { font-size: 2.2rem !important; line-height: 1.2 !important; }
+    .hero-desc { font-size: 1.1rem !important; }
+    .hero-ctas, .trust-row, .footer-top, .footer-bottom, .tabs-nav {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    .tab-btn, .btn, .email-form input, .email-form button {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    .email-form {
+        flex-direction: column !important;
+        margin: 20px 0 !important;
+    }
+    .api-card, .price-card, .col-card, .timeline-content-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+    .ring-1, .ring-2, .ring-3 { display: none !important; }
+    .orbit-container { height: auto !important; padding: 40px 0 !important; }
+    .nav-links, .nav-actions { display: none !important; }
+    .mobile-menu-btn { display: block !important; }
+    .mockup-wrapper { display: none !important; }
+    .comparison-grid, .pricing-grid, .metrics-grid, .faq-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .aurora-bg { overflow: hidden; width: 100%; }
+}
